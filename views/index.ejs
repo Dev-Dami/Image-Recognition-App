@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Image Upload</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-6">
+    <div class="bg-white rounded-2xl shadow-xl p-8 max-w-lg w-full text-center">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6">Upload an Image</h1>
+        <p class="text-gray-500 mb-6">Drag & drop your image here or click to select</p>
+
+        <form id="uploadForm" action="/upload" method="POST" enctype="multipart/form-data" class="relative">
+            <input type="file" name="image" id="imageInput" class="hidden" required>
+            <label id="dropBox" for="imageInput"
+                class="cursor-pointer border-4 border-dashed border-gray-300 rounded-2xl py-16 flex flex-col items-center justify-center hover:border-blue-500 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400 mb-4" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M7 16V4m0 0l-4 4m4-4l4 4M17 16V4m0 0l-4 4m4-4l4 4" />
+                </svg>
+                <span class="text-gray-500">Drop your image here or click to browse</span>
+            </label>
+
+            <div class="mt-4">
+                <img id="preview" class="mx-auto rounded-lg hidden max-w-xs" />
+            </div>
+
+            <button type="submit"
+                class="mt-6 w-full bg-blue-600 text-white font-semibold py-3 rounded-xl shadow hover:bg-blue-700 transition">
+                Upload Image
+            </button>
+        </form>
+    </div>
+
+    <script>
+        const imageInput = document.getElementById('imageInput');
+        const preview = document.getElementById('preview');
+        const dropBox = document.getElementById('dropBox');
+
+        function handleFile(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                preview.src = e.target.result;
+                preview.classList.remove('hidden');
+                // Hide the drag-and-drop box after selecting an image
+                dropBox.style.display = 'none';
+            }
+            reader.readAsDataURL(file);
+        }
+
+        // Show preview when file is selected
+        imageInput.addEventListener('change', () => {
+            if (imageInput.files && imageInput.files[0]) {
+                handleFile(imageInput.files[0]);
+            }
+        });
+
+        // Drag & drop events
+        dropBox.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropBox.classList.add('border-blue-500');
+        });
+        dropBox.addEventListener('dragleave', () => {
+            dropBox.classList.remove('border-blue-500');
+        });
+        dropBox.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropBox.classList.remove('border-blue-500');
+            if (e.dataTransfer.files.length) {
+                imageInput.files = e.dataTransfer.files;
+                handleFile(e.dataTransfer.files[0]);
+            }
+        });
+    </script>
+</body>
+
+</html>
