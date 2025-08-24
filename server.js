@@ -13,6 +13,24 @@ app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "public")));
 
+// middleware
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
+const cors = require("cors");
+
+// Basic security headers
+app.use(helmet());
+app.use(cors());
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: "Too many requests from this IP, please try again later.",
+});
+app.use(limiter);
+
 const upload = multer({ dest: "uploads/" });
 const uploadsDir = path.join(__dirname, "uploads");
 
@@ -24,7 +42,7 @@ app.get("/", (req, res) => {
   res.render("index");
 });
 
-app.post("/upload", upload.single("image"), async (req, res) => {
+app.post("/upload", limiter, upload.single("image"), async (req, res) => {
   if (!req.file) return res.send("No file uploaded");
 
   try {
