@@ -32,10 +32,10 @@ const limiter = rateLimit({
 app.use(limiter);
 
 const upload = multer({ dest: "uploads/" });
-const uploadsDir = path.join(__dirname, "public/uploads");
+const uploadsDir = path.join(__dirname, "uploads");
 
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir);
+if (!fs.existsSync(path.join(__dirname, "public/uploads"))) {
+  fs.mkdirSync(path.join(__dirname, "public/uploads"));
 }
 
 app.get("/", (req, res) => {
